@@ -1,25 +1,47 @@
+import { useState } from "react"
 import Layout from "../components/Layout"
 import Table from "../components/Table"
 import Client from "../core/Client"
 import Button from "../components/Button"
 import Form from "../components/Form"
-import { useState } from "react"
+import ClientRepository from "../core/CllientRepository"
+import ClientColection from "../backend/db/ClientColection"
+import { useEffect } from "react"
 
 export default function Home() {
 
-  const clients = [
-    new Client("ana", 34 , '1'),
-    new Client("ana", 74 , '1'),
-    new Client("ana", 34 , '1')
-  ]
+  const  repo: ClientRepository = new ClientColection()
+  
+  const [client, setClient] = useState<Client>(Client.void())
+  const [clients, setClients] = useState<Client[]>([])
+  const [visible, setVisible] = useState <'table' | 'form'>('table')
+  
+  useEffect(getAll, [])
 
-  function clientSelected(client: Client) {}
+  function getAll() {
+    repo.getAll().then(clients => {
+      setClients(clients)
+      setVisible("table")
+    } )
+  }
+
+  function clientSelected(client: Client) {
+    setClient(client)
+    setVisible('form')
+  }
 
   function clienteDeleted(client: Client) {}
 
-  function saveClient(client: Client) {}
+  function newClient() {
+    setClient(Client.void)
+    setVisible("form")
+  }
 
-  const [visible, setVisible] = useState <'table' | 'form'>('table')
+  async function saveClient(client: Client) {
+    await repo.save(client)
+    getAll()
+  }
+
 
   return (
     <div className={`
@@ -34,7 +56,7 @@ export default function Home() {
           <Button 
             color="green" 
             className="mb-4"
-            onClick={() => setVisible('form')}>
+            onClick={newClient}>
             New Client
           </Button>
         </div>
@@ -47,7 +69,7 @@ export default function Home() {
 
         ): (
           <Form 
-          client={clients[0]}
+          client={client}
           clientChange={saveClient}
           cancel={() => setVisible('table')}/>
         )}

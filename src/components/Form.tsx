@@ -36,7 +36,7 @@ export default function Form(props: FormProps) {
             value={age}
             valueChange={setAge}/>
 
-            <div className = "flex justify-end mt-3">
+            <div className = "flex justify-end mt-7">
                 <Button 
                 color="blue" 
                 className="mr-2" 
